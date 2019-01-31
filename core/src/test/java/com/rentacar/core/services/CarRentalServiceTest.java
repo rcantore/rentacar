@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -20,21 +19,44 @@ public class CarRentalServiceTest {
     @Autowired
     CarRentalService carRentalService;
 
+    @Autowired
+    CustomerService customerService;
+
     @Test
     public void testSucessfulKmRentalPlan() {
         Customer customer = new Customer();
         customer.setName("John Doe");
-        RentalSolicitude rentalSolicitude = carRentalService.rentKmRentalPlanForCustomer(customer);
+
+        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(customerService.save(customer));
 
         assertNotNull(rentalSolicitude);
-        assertNotNull(rentalSolicitude.getRentalPlan());
-        assertThat(rentalSolicitude.getRentalPlan(), instanceOf(KmRentalPlan.class));
 
         assertNotNull(rentalSolicitude.getCustomer());
         assertEquals(rentalSolicitude.getCustomer().getName(), customer.getName());
 
         assertNotNull(rentalSolicitude.getStatus());
-        assertEquals(rentalSolicitude.getStatus().getDescription(), Status.STATUS_ON_TRIP);
+        assertEquals(Status.STATUS_PENDING, rentalSolicitude.getStatus().getDescription());
+
+        RentalSolicitude modifiedRentalSolicitude = carRentalService.startTripOfRentalSolicitudeForRentalPlan(rentalSolicitude, new KmRentalPlan());
+
+        assertNotNull(modifiedRentalSolicitude.getStatus());
+        assertEquals(Status.STATUS_ON_TRIP, modifiedRentalSolicitude.getStatus().getDescription());
+
+    }
+
+    @Test
+    public void testRejectSolicitudeCustomerWithOngoingTrip() {
+        Customer customer = new Customer();
+        customer.setName("John Doe");
+
+        Customer savedCustomer = customerService.save(customer);
+        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
+
+        assertNotNull(rentalSolicitude);
+
+        rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
+
+        assertNull(rentalSolicitude);
 
     }
 }

@@ -1,16 +1,50 @@
 package com.rentacar.core.services;
 
-import com.rentacar.core.entities.Customer;
-import com.rentacar.core.entities.RentalSolicitude;
-import com.rentacar.core.entities.Status;
+import com.rentacar.core.entities.*;
+import com.rentacar.core.entities.repositories.RentalSolicitudeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CarRentalService {
-    public RentalSolicitude rentKmRentalPlanForCustomer(Customer customer) {
-        RentalSolicitude rentalSolicitude = new RentalSolicitude();
-        rentalSolicitude.setCustomer(customer);
+
+    @Autowired
+    CustomerService customerService;
+
+    final private RentalSolicitudeRepository rentalSolicitudeRepository;
+
+    @Autowired
+    public CarRentalService(RentalSolicitudeRepository rentalSolicitudeRepository) {
+        this.rentalSolicitudeRepository = rentalSolicitudeRepository;
+    }
+
+    public RentalSolicitude createRentalSolicitudeForCustomer(Customer customer) {
+        List<RentalSolicitude> rentalSolicitudes = rentalSolicitudeRepository.findAllByCustomer(customer);
+
+        long pendingSolicitudes = rentalSolicitudes.stream().filter(rentalSolicitude ->
+                rentalSolicitude.getStatus().getDescription().equals(Status.STATUS_PENDING) ||
+                        rentalSolicitude.getStatus().getDescription().equals(Status.STATUS_ON_TRIP)).count();
+
+
+        RentalSolicitude returnRentalSolicitude = null;
+        if (pendingSolicitudes == 0) { // there are no pending trips for customer
+            RentalSolicitude rentalSolicitude = new RentalSolicitude();
+            rentalSolicitude.setCustomer(customer);
+            rentalSolicitude.setStatus(new Status(Status.STATUS_PENDING));
+
+            returnRentalSolicitude = rentalSolicitudeRepository.save(rentalSolicitude);
+        }
+
+
+        return returnRentalSolicitude;
+    }
+
+    public RentalSolicitude startTripOfRentalSolicitudeForRentalPlan(RentalSolicitude rentalSolicitude, RentalPlan rentalPlan) {
+        rentalSolicitude.setRentalPlan(rentalPlan);
         rentalSolicitude.setStatus(new Status(Status.STATUS_ON_TRIP));
-        return rentalSolicitude;
+
+        return rentalSolicitudeRepository.save(rentalSolicitude);
     }
 }
