@@ -6,6 +6,6 @@ import javax.persistence.Entity;
 
 @Entity
 @Qualifier("KmRentalPlan")
-public class KmRentalPlan  extends AbstractEntity implements RentalPlan {
+public class KmRentalPlan extends RentalPlan {
 
 }
