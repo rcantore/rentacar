@@ -48,7 +48,7 @@ public class CarRentalService {
         return rentalSolicitudeRepository.save(rentalSolicitude);
     }
 
-    public RentalSolicitude finalizeTrip(RentalSolicitude inprogressRentalSolicitude, Double kms) {
+    public RentalSolicitude finalizeTrip(RentalSolicitude inprogressRentalSolicitude, Double unitsConsumed) {
         inprogressRentalSolicitude.setStatus(new Status(Status.STATUS_TRIP_FINISHED));
 
         return rentalSolicitudeRepository.save(inprogressRentalSolicitude);
@@ -56,6 +56,13 @@ public class CarRentalService {
 
     public RentalSolicitude startTripOfRentalSolicitudeForHourlyRentalPlan(RentalSolicitude rentalSolicitude, RentalPlan hourlyRentalPlan) {
         rentalSolicitude.setRentalPlan(hourlyRentalPlan);
+        rentalSolicitude.setStatus(new Status(Status.STATUS_ON_TRIP));
+
+        return rentalSolicitudeRepository.save(rentalSolicitude);
+    }
+
+    public RentalSolicitude startTripOfRentalSolicitudeForWeeklyRentalPlan(RentalSolicitude rentalSolicitude, RentalPlan weeklyRentalPlan) {
+        rentalSolicitude.setRentalPlan(weeklyRentalPlan);
         rentalSolicitude.setStatus(new Status(Status.STATUS_ON_TRIP));
 
         return rentalSolicitudeRepository.save(rentalSolicitude);

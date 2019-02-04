@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Entity
 public class RentalSolicitude extends AbstractEntity {
@@ -41,8 +42,8 @@ public class RentalSolicitude extends AbstractEntity {
         this.status = status;
     }
 
-    public BigDecimal getTotalCharge(Double unitsConsumed) {
-        return getRentalPlan().getUnitValue().multiply(BigDecimal.valueOf(unitsConsumed));
+    public BigDecimal getTotalCharge(Map<String, Double> unitsConsumed) {
+        return getRentalPlan().calculateTotalCharge(unitsConsumed);
     }
 
 }
