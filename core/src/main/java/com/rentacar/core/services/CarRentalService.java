@@ -53,4 +53,11 @@ public class CarRentalService {
 
         return rentalSolicitudeRepository.save(inprogressRentalSolicitude);
     }
+
+    public RentalSolicitude startTripOfRentalSolicitudeForHourlyRentalPlan(RentalSolicitude rentalSolicitude, RentalPlan hourlyRentalPlan) {
+        rentalSolicitude.setRentalPlan(hourlyRentalPlan);
+        rentalSolicitude.setStatus(new Status(Status.STATUS_ON_TRIP));
+
+        return rentalSolicitudeRepository.save(rentalSolicitude);
+    }
 }

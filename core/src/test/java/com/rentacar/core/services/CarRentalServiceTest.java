@@ -1,9 +1,6 @@
 package com.rentacar.core.services;
 
-import com.rentacar.core.entities.Customer;
-import com.rentacar.core.entities.KmRentalPlan;
-import com.rentacar.core.entities.RentalSolicitude;
-import com.rentacar.core.entities.Status;
+import com.rentacar.core.entities.*;
 import com.rentacar.core.entities.repositories.CustomerRepository;
 import com.rentacar.core.entities.repositories.RentalSolicitudeRepository;
 import org.junit.Before;
@@ -109,6 +106,62 @@ public class CarRentalServiceTest {
         // expectd 500km * $50 = $25000
         Double unitsConsumed = kms;
         assertTrue(finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(25000d)) == 0);
+
+    }
+
+
+    @Test
+    public void testSuccessfulCreationHourlyRentalPlan() {
+        Customer customer = new Customer();
+        customer.setName("John Doe");
+        customer.setIdentification("9999999");
+
+        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(customerService.save(customer));
+
+        assertNotNull(rentalSolicitude);
+
+        assertNotNull(rentalSolicitude.getCustomer());
+        assertEquals(rentalSolicitude.getCustomer().getName(), customer.getName());
+
+        assertNotNull(rentalSolicitude.getStatus());
+        assertEquals(Status.STATUS_PENDING, rentalSolicitude.getStatus().getDescription());
+
+        RentalSolicitude modifiedRentalSolicitude = carRentalService.startTripOfRentalSolicitudeForHourlyRentalPlan(rentalSolicitude, new HourlyRentalPlan());
+
+        assertNotNull(modifiedRentalSolicitude.getStatus());
+        assertEquals(Status.STATUS_ON_TRIP, modifiedRentalSolicitude.getStatus().getDescription());
+
+    }
+
+    @Test
+    public void testSucessfulTripEndHourlyRentalPlan() {
+        Customer customer = new Customer();
+        customer.setName("John Doe");
+        customer.setIdentification("9999999");
+
+        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(customerService.save(customer));
+
+        assertNotNull(rentalSolicitude);
+
+        assertNotNull(rentalSolicitude.getCustomer());
+        assertEquals(rentalSolicitude.getCustomer().getName(), customer.getName());
+
+        assertNotNull(rentalSolicitude.getStatus());
+        assertEquals(Status.STATUS_PENDING, rentalSolicitude.getStatus().getDescription());
+
+        RentalSolicitude inProgressRentalSolicitude = carRentalService.startTripOfRentalSolicitudeForHourlyRentalPlan(rentalSolicitude, new HourlyRentalPlan());
+
+        assertNotNull(inProgressRentalSolicitude.getStatus());
+        assertEquals(Status.STATUS_ON_TRIP, inProgressRentalSolicitude.getStatus().getDescription());
+
+        Double hours = 6d;
+        RentalSolicitude finalizedRentalSolicitude = carRentalService.finalizeTrip(inProgressRentalSolicitude, hours);
+        assertNotNull(finalizedRentalSolicitude);
+
+        assertEquals(Status.STATUS_TRIP_FINISHED, finalizedRentalSolicitude.getStatus().getDescription());
+
+        // expectd 6hrs * $300 = $1800
+        assertTrue(finalizedRentalSolicitude.getTotalCharge(hours).compareTo(new BigDecimal(1800d)) == 0);
 
     }
 }
