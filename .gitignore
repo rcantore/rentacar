@@ -38,5 +38,4 @@ gradle-app.setting
 # Cache of project
 .gradletasknamecache
 
-.gradle/4.10.2/fileHashes/fileHashes.bin
-.gradle/4.10.2/fileHashes/fileHashes.lock
+*.class
