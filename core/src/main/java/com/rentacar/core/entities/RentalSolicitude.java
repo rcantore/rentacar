@@ -3,6 +3,7 @@ package com.rentacar.core.entities;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
+import java.math.BigDecimal;
 
 @Entity
 public class RentalSolicitude extends AbstractEntity {
@@ -39,4 +40,9 @@ public class RentalSolicitude extends AbstractEntity {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public BigDecimal getTotalCharge(Double unitsConsumed) {
+        return getRentalPlan().getUnitValue().multiply(BigDecimal.valueOf(unitsConsumed));
+    }
+
 }

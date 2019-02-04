@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,24 @@ public class CustomerServiceTest {
         Customer savedCustomer = customerService.save(customer);
 
         assertNotNull(savedCustomer);
+    }
+
+    @Test(expected = DataIntegrityViolationException.class)
+    public void testRejectSaveCustomerWithExistingIdentification() {
+        Customer customer = new Customer();
+        customer.setName("John Doe");
+        customer.setIdentification("999999999");
+
+        Customer savedCustomer = customerService.save(customer);
+
+        assertNotNull(savedCustomer);
+
+        customer = new Customer();
+        customer.setName("Jane Doe");
+        customer.setIdentification("999999999");
+
+        customerService.save(customer);
+
     }
 
     @Test

@@ -47,4 +47,10 @@ public class CarRentalService {
 
         return rentalSolicitudeRepository.save(rentalSolicitude);
     }
+
+    public RentalSolicitude finalizeTrip(RentalSolicitude inprogressRentalSolicitude, Double kms) {
+        inprogressRentalSolicitude.setStatus(new Status(Status.STATUS_TRIP_FINISHED));
+
+        return rentalSolicitudeRepository.save(inprogressRentalSolicitude);
+    }
 }
