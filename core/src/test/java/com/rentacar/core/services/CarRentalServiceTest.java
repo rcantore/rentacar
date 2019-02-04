@@ -43,7 +43,6 @@ public class CarRentalServiceTest {
 
     @Test
     public void testRejectSolicitudeCustomerWithOngoingTrip() {
-        KmRentalPlan kmRentalPlan = new KmRentalPlan();
         Customer customer = new Customer();
         customer.setName("John Doe");
         customer.setIdentification("9999999");
