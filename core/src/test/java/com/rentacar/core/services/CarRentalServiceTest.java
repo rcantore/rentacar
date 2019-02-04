@@ -40,7 +40,24 @@ public class CarRentalServiceTest {
     }
 
     @Test
-    public void testSucessfulCreationKmRentalPlan() {
+    public void testRejectSolicitudeCustomerWithOngoingTrip() {
+        Customer customer = new Customer();
+        customer.setName("John Doe");
+        customer.setIdentification("9999999");
+
+        Customer savedCustomer = customerService.save(customer);
+        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
+
+        assertNotNull(rentalSolicitude);
+
+        rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
+
+        assertNull(rentalSolicitude);
+
+    }
+
+    @Test
+    public void testSuccessfulCreationKmRentalPlan() {
         Customer customer = new Customer();
         customer.setName("John Doe");
         customer.setIdentification("9999999");
@@ -59,23 +76,6 @@ public class CarRentalServiceTest {
 
         assertNotNull(modifiedRentalSolicitude.getStatus());
         assertEquals(Status.STATUS_ON_TRIP, modifiedRentalSolicitude.getStatus().getDescription());
-
-    }
-
-    @Test
-    public void testRejectSolicitudeCustomerWithOngoingTrip() {
-        Customer customer = new Customer();
-        customer.setName("John Doe");
-        customer.setIdentification("9999999");
-
-        Customer savedCustomer = customerService.save(customer);
-        RentalSolicitude rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
-
-        assertNotNull(rentalSolicitude);
-
-        rentalSolicitude = carRentalService.createRentalSolicitudeForCustomer(savedCustomer);
-
-        assertNull(rentalSolicitude);
 
     }
 
