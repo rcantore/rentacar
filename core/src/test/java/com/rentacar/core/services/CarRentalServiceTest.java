@@ -1,7 +1,9 @@
 package com.rentacar.core.services;
 
 import com.rentacar.core.UnitConstants;
-import com.rentacar.core.entities.*;
+import com.rentacar.core.entities.Customer;
+import com.rentacar.core.entities.RentalSolicitude;
+import com.rentacar.core.entities.Status;
 import com.rentacar.core.entities.repositories.CustomerRepository;
 import com.rentacar.core.entities.repositories.RentalSolicitudeRepository;
 import org.junit.Before;
@@ -191,7 +193,7 @@ public class CarRentalServiceTest {
         assertNotNull(rentalSolicitude.getStatus());
         assertEquals(Status.STATUS_PENDING, rentalSolicitude.getStatus().getDescription());
 
-        RentalSolicitude modifiedRentalSolicitude = carRentalService.startTripOfRentalSolicitudeForWeeklyRentalPlan(rentalSolicitude, new WeeklyRentalPlan());
+        RentalSolicitude modifiedRentalSolicitude = carRentalService.startTripOfRentalSolicitudeForWeeklyRentalPlan(rentalSolicitude, rentalPlanService.getWeeklyRentalPlan());
 
         assertNotNull(modifiedRentalSolicitude.getStatus());
         assertEquals(Status.STATUS_ON_TRIP, modifiedRentalSolicitude.getStatus().getDescription());
@@ -229,7 +231,8 @@ public class CarRentalServiceTest {
         Map<String, Double> unitsConsumed = new HashMap<String, Double>() {{
             put(UnitConstants.WEEKS_KEY, weeks);
         }};
-        assertTrue(finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(20000d)) == 0);
+
+        assertEquals(0, finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(20000d)));
 
     }
 
@@ -265,7 +268,7 @@ public class CarRentalServiceTest {
         Map<String, Double> unitsConsumed = new HashMap<String, Double>() {{
             put(UnitConstants.WEEKS_KEY, weeks);
         }};
-        assertTrue(finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(30000d)) == 0);
+        assertEquals(0, finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(30000d)));
 
     }
 }
