@@ -13,7 +13,7 @@ import java.util.Map;
 public class WeeklyRentalPlan extends RentalPlan {
     private static final Map<String, BigDecimal> defaults = new HashMap<>() ;
     public static BigDecimal MY_UNIT_VALUE = BigDecimal.valueOf(10000d);
-    public static BigDecimal MY_EXCEED_UNIT_VALUE = BigDecimal.valueOf(300);
+    public static BigDecimal MY_EXCEED_UNIT_VALUE = BigDecimal.valueOf(100);
 
     static {
         defaults.put(RentalPlan.DEFAULT_UNIT_COST, MY_UNIT_VALUE);
@@ -26,8 +26,17 @@ public class WeeklyRentalPlan extends RentalPlan {
 
     @Override
     public BigDecimal calculateTotalCharge(Map<String, Double> consumedUnits) {
-        BigDecimal total = getUnitValues().get(RentalPlan.DEFAULT_UNIT_COST)
+        BigDecimal baseCharge = getUnitValues().get(RentalPlan.DEFAULT_UNIT_COST)
                 .multiply(BigDecimal.valueOf(consumedUnits.get(UnitConstants.WEEKS_KEY)));
-        return total;
+
+        Double kms = consumedUnits.get(UnitConstants.KMS_KEY);
+        BigDecimal extraCharge = new BigDecimal(0);
+        if (kms != null && kms > 3000) {
+            Double extraKms = (kms - 3000) / 3;
+            extraCharge = getUnitValues().get(RentalPlan.DEFAULT_EXCEEDED_UNIT_COST)
+                    .multiply(BigDecimal.valueOf(extraKms));
+
+        }
+        return baseCharge.add(extraCharge);
     }
 }

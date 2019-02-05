@@ -264,9 +264,10 @@ public class CarRentalServiceTest {
 
         assertEquals(Status.STATUS_TRIP_FINISHED, finalizedRentalSolicitude.getStatus().getDescription());
 
-        // expectd (2w * $10000) + ((30km / 3km) * $100) = $20000 + $10000 = $30000
+        // expectd (2w * $10000) + ((300km / 3km) * $100) = $20000 + $10000 = $30000
         Map<String, Double> unitsConsumed = new HashMap<String, Double>() {{
             put(UnitConstants.WEEKS_KEY, weeks);
+            put(UnitConstants.KMS_KEY, kms);
         }};
         assertEquals(0, finalizedRentalSolicitude.getTotalCharge(unitsConsumed).compareTo(new BigDecimal(30000d)));
 
